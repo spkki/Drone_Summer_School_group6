@@ -1,0 +1,24 @@
+import cv2
+import random
+
+def main():
+    filename = '../input/shapes.png'
+    image = cv2.imread(filename)
+    image_grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    contours, hierarchy = cv2.findContours(image_grey, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    cv2.namedWindow("Display Image", cv2.WINDOW_AUTOSIZE)
+    cv2.imshow("Display Image", image_grey)
+
+    drawing = 0 * image
+    random.seed(12345)
+    for idx, contour in enumerate(contours):
+        color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        cv2.drawContours(drawing, contours, idx, color, 2, 8, hierarchy, 0)
+
+    cv2.namedWindow("Contours", cv2.WINDOW_AUTOSIZE)
+    cv2.imshow("Contours", drawing)
+    cv2.waitKey(-1)
+
+main()
