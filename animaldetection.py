@@ -6,7 +6,7 @@ import cv2
 
 # Setup for Mahalanobis distance calculation
 # load image and convert to HSV
-image = cv2.imread("assets/capture_5/img_10.jpg")
+image = cv2.imread("assets/capture_3/img_5.jpg")
 resized = cv2.resize(image, (800, 600))
 cv2.imshow("Original Image", resized)
 hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -42,7 +42,7 @@ mahalanobis_distance = np.sum(moddotproduct, axis=1)
 mahalanobis_distance_image = np.reshape(mahalanobis_distance, (image.shape[0], image.shape[1]))
 
 # Threshold: classify grass (distance < 3 = grass)
-threshold = 115.0
+threshold = 85.0
 grass_mask = (mahalanobis_distance_image < threshold).astype(np.uint8) * 255
 
 # Remove grass
@@ -67,7 +67,9 @@ color_threshold = 15  # smaller = stricter match
 
 out = image.copy()
 
-min_diameter = 35  # pixels
+Pixel_scale = 1250 # User defined
+Altitude = 25 # meters
+min_diameter = Pixel_scale / Altitude  # pixels
 
 for i, cnt in enumerate(contours, start=1):
     (x, y), radius = cv2.minEnclosingCircle(cnt)
@@ -97,49 +99,79 @@ for i, cnt in enumerate(contours, start=1):
     #cv2.putText(out, f"#{i}", center,
     #            cv2.FONT_HERSHEY_SIMPLEX, 3, (0, 0, 255), 2)
     
-    color_E_up = np.array([116, 186, 95])
+    #Elephant
+    color_E_up = np.array([116, 200, 95])
     color_E_low = np.array([112, 161, 56])
 
     if (avg_hsv[0] >= color_E_low[0] and avg_hsv[0] <= color_E_up[0] and
         avg_hsv[1] >= color_E_low[1] and avg_hsv[1] <= color_E_up[1] and
         avg_hsv[2] >= color_E_low[2] and avg_hsv[2] <= color_E_up[2]):
         cv2.circle(out, center, int(radius), (0, 255, 0), 2)
-        cv2.putText(out, "Elephant", center,
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2)
-        
-    color_A_up = np.array([116, 172, 191])
-    color_A_low = np.array([107, 144, 157])
+        cv2.putText(out, "Elephant", center, cv2.FONT_HERSHEY_SIMPLEX, 2, (116, 172, 191), 3)
+    
+    #Antelope    
+    color_A_up = np.array([116, 177, 192])
+    color_A_low = np.array([107, 144, 151])
+    
+    # Check if color matches antelope range
+    antelope_color_match = (avg_hsv[0] >= color_A_low[0] and avg_hsv[0] <= color_A_up[0] and
+                           avg_hsv[1] >= color_A_low[1] and avg_hsv[1] <= color_A_up[1] and
+                           avg_hsv[2] >= color_A_low[2] and avg_hsv[2] <= color_A_up[2])
+    
+    #Hippo    
+    color_H_up = np.array([115, 213, 121])
+    color_H_low = np.array([111, 200, 114])
 
-    if (avg_hsv[0] >= color_A_low[0] and avg_hsv[0] <= color_A_up[0] and
-        avg_hsv[1] >= color_A_low[1] and avg_hsv[1] <= color_A_up[1] and
-        avg_hsv[2] >= color_A_low[2] and avg_hsv[2] <= color_A_up[2]):
+    if (avg_hsv[0] >= color_H_low[0] and avg_hsv[0] <= color_H_up[0] and
+        avg_hsv[1] >= color_H_low[1] and avg_hsv[1] <= color_H_up[1] and
+        avg_hsv[2] >= color_H_low[2] and avg_hsv[2] <= color_H_up[2]):
         cv2.circle(out, center, int(radius), (0, 255, 0), 2)
-        cv2.putText(out, "Antelope", center,
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2)
-        
-    color_R_up = np.array([114, 213, 118])
-    color_R_low = np.array([112, 206, 114])
-
-    if (avg_hsv[0] >= color_R_low[0] and avg_hsv[0] <= color_R_up[0] and
-        avg_hsv[1] >= color_R_low[1] and avg_hsv[1] <= color_R_up[1] and
-        avg_hsv[2] >= color_R_low[2] and avg_hsv[2] <= color_R_up[2]):
-        cv2.circle(out, center, int(radius), (0, 255, 0), 2)
-        cv2.putText(out, "Rhino", center,
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2) 
-        
-    color_L_up = np.array([141, 72, 142])
-    color_L_low = np.array([131, 47, 123])
+        cv2.putText(out, "Hippo", center, cv2.FONT_HERSHEY_SIMPLEX, 2, (116, 172, 191), 3) 
+    
+    #Lion
+    color_L_up = np.array([141, 95, 142])
+    color_L_low = np.array([121, 47, 101])
 
     if (avg_hsv[0] >= color_L_low[0] and avg_hsv[0] <= color_L_up[0] and
         avg_hsv[1] >= color_L_low[1] and avg_hsv[1] <= color_L_up[1] and
         avg_hsv[2] >= color_L_low[2] and avg_hsv[2] <= color_L_up[2]):
         cv2.circle(out, center, int(radius), (0, 255, 0), 2)
-        cv2.putText(out, "Lion", center,
-                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2)        
+        cv2.putText(out, "Lion", center, cv2.FONT_HERSHEY_SIMPLEX, 2, (116, 172, 191), 3)
+        
+    #Zebra
+    color_Z_up = np.array([118, 187, 172])
+    color_Z_low = np.array([109, 135, 143])
+    
+    # Check if color matches zebra range
+    zebra_color_match = (avg_hsv[0] >= color_Z_low[0] and avg_hsv[0] <= color_Z_up[0] and
+                        avg_hsv[1] >= color_Z_low[1] and avg_hsv[1] <= color_Z_up[1] and
+                        avg_hsv[2] >= color_Z_low[2] and avg_hsv[2] <= color_Z_up[2])
+    
+    # Size-based discrimination between zebra and antelope (both have similar colors)
+    # Define size thresholds - adjust these based on your altitude and expected animal sizes
+    large_animal_threshold = min_diameter * 2.5  # Zebras are typically larger
+    small_animal_threshold = min_diameter * 0.8  # Antelopes are typically smaller
+    
+    # If both zebra and antelope color ranges match, use size to decide
+    if zebra_color_match and antelope_color_match:
+        if diameter >= large_animal_threshold:
+            cv2.circle(out, center, int(radius), (0, 255, 0), 2)
+            cv2.putText(out, "Zebra", center, cv2.FONT_HERSHEY_SIMPLEX, 2, (116, 172, 191), 3)
+        elif diameter >= small_animal_threshold:
+            cv2.circle(out, center, int(radius), (0, 255, 0), 2)
+            cv2.putText(out, "Antelope", center, cv2.FONT_HERSHEY_SIMPLEX, 2, (116, 172, 191), 3)
+    # If only zebra color matches
+    elif zebra_color_match:
+        cv2.circle(out, center, int(radius), (0, 255, 0), 2)
+        cv2.putText(out, "Zebra", center, cv2.FONT_HERSHEY_SIMPLEX, 2, (116, 172, 191), 3)
+    # If only antelope color matches
+    elif antelope_color_match:
+        cv2.circle(out, center, int(radius), (0, 255, 0), 2)
+        cv2.putText(out, "Antelope", center, cv2.FONT_HERSHEY_SIMPLEX, 2, (116, 172, 191), 3)            
         
 # Show labeled clusters
 resized_out = cv2.resize(out, (800, 600))
-cv2.imshow("Clusters with X", resized_out)
+cv2.imshow("Animals marked", resized_out)
 
 # Wait for a key press and close all windows
 cv2.waitKey(0)
