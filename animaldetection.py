@@ -6,7 +6,7 @@ import cv2
 
 # Setup for Mahalanobis distance calculation
 # load image and convert to HSV
-image = cv2.imread("assets/capture_3/img_5.jpg")
+image = cv2.imread("assets/capture_7/img_15.jpg")
 resized = cv2.resize(image, (800, 600))
 cv2.imshow("Original Image", resized)
 hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
